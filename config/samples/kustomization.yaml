@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- cleanup_v1alpha1_preclusterdestroycleanup.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

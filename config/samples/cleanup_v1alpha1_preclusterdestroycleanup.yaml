@@ -1,0 +1,28 @@
+apiVersion: cleanup.quartz.metrostar.com/v1alpha1
+kind: PreClusterDestroyCleanup
+metadata:
+  labels:
+    app.kubernetes.io/name: tmp
+    app.kubernetes.io/managed-by: kustomize
+  name: preclusterdestroycleanup-sample
+spec:
+  dryRun: true
+  resources:
+    - kind: Deployment
+      namespace: flux-system
+      action: scaleToZero
+    - kind: Deployment
+      namespace: argocd
+      action: scaleToZero
+    - kind: Deployment
+      name: istio-system
+      action: scaleToZero
+    - kind: PodDisruptionBudget
+      action: delete
+    - kind: CompositeResourceDefinition.apiextensions.crossplane.io
+      action: delete
+    - kind: CustomResourceDefinition
+      category: managed
+      action: delete
+    - kind: Provider.pkg.crossplane.io
+      action: delete
