@@ -143,15 +143,15 @@ var _ = Describe("PreClusterDestroyCleanup Controller", func() {
 				if err := k8sClient.Get(ctx, typeNamespacedName, updatedResource); err != nil {
 					return false
 				}
-				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
-				return condition != nil && condition.Reason == "NoResources"
+				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
+				return condition != nil && condition.Reason == ReasonNoResources
 			}, timeout, interval).Should(BeTrue())
 
 			// Verify the condition details
-			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
+			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
 			Expect(condition).NotTo(BeNil())
 			Expect(condition.Status).To(Equal(metav1.ConditionTrue))
-			Expect(condition.Reason).To(Equal("NoResources"))
+			Expect(condition.Reason).To(Equal(ReasonNoResources))
 			Expect(condition.Message).To(Equal("No resources specified for processing"))
 		})
 	})
@@ -208,15 +208,15 @@ var _ = Describe("PreClusterDestroyCleanup Controller", func() {
 				if err := k8sClient.Get(ctx, typeNamespacedName, updatedResource); err != nil {
 					return false
 				}
-				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
-				return condition != nil && condition.Reason == "CompletedSuccessfully"
+				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
+				return condition != nil && condition.Reason == ReasonCompletedSuccessfully
 			}, timeout, interval).Should(BeTrue())
 
 			// Verify the condition details
-			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
+			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
 			Expect(condition).NotTo(BeNil())
 			Expect(condition.Status).To(Equal(metav1.ConditionTrue))
-			Expect(condition.Reason).To(Equal("CompletedSuccessfully"))
+			Expect(condition.Reason).To(Equal(ReasonCompletedSuccessfully))
 			Expect(condition.Message).To(ContainSubstring("Processed"))
 		})
 	})
@@ -277,15 +277,15 @@ var _ = Describe("PreClusterDestroyCleanup Controller", func() {
 				if err := k8sClient.Get(ctx, typeNamespacedName, updatedResource); err != nil {
 					return false
 				}
-				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
-				return condition != nil && condition.Reason == "CompletedSuccessfully"
+				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
+				return condition != nil && condition.Reason == ReasonCompletedSuccessfully
 			}, timeout, interval).Should(BeTrue())
 
 			// Verify the condition details
-			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
+			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
 			Expect(condition).NotTo(BeNil())
 			Expect(condition.Status).To(Equal(metav1.ConditionTrue))
-			Expect(condition.Reason).To(Equal("CompletedSuccessfully"))
+			Expect(condition.Reason).To(Equal(ReasonCompletedSuccessfully))
 			Expect(condition.Message).To(ContainSubstring("Processed"))
 		})
 	})
@@ -361,15 +361,15 @@ var _ = Describe("PreClusterDestroyCleanup Controller", func() {
 				if err := k8sClient.Get(ctx, typeNamespacedName, updatedResource); err != nil {
 					return false
 				}
-				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
-				return condition != nil && condition.Reason == "CompletedSuccessfully"
+				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
+				return condition != nil && condition.Reason == ReasonCompletedSuccessfully
 			}, timeout, interval).Should(BeTrue())
 
 			// Verify the condition details
-			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
+			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
 			Expect(condition).NotTo(BeNil())
 			Expect(condition.Status).To(Equal(metav1.ConditionTrue))
-			Expect(condition.Reason).To(Equal("CompletedSuccessfully"))
+			Expect(condition.Reason).To(Equal(ReasonCompletedSuccessfully))
 			Expect(condition.Message).To(ContainSubstring("Processed"))
 		})
 	})
@@ -428,15 +428,15 @@ var _ = Describe("PreClusterDestroyCleanup Controller", func() {
 				if err := k8sClient.Get(ctx, typeNamespacedName, updatedResource); err != nil {
 					return false
 				}
-				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
-				return condition != nil && condition.Reason == "CompletedWithErrors"
+				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
+				return condition != nil && condition.Reason == ReasonCompletedWithErrors
 			}, timeout, interval).Should(BeTrue())
 
 			// Verify the condition details
-			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
+			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
 			Expect(condition).NotTo(BeNil())
 			Expect(condition.Status).To(Equal(metav1.ConditionTrue))
-			Expect(condition.Reason).To(Equal("CompletedWithErrors"))
+			Expect(condition.Reason).To(Equal(ReasonCompletedWithErrors))
 			Expect(condition.Message).To(ContainSubstring("error"))
 		})
 	})
@@ -495,15 +495,15 @@ var _ = Describe("PreClusterDestroyCleanup Controller", func() {
 				if err := k8sClient.Get(ctx, typeNamespacedName, updatedResource); err != nil {
 					return false
 				}
-				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
-				return condition != nil && condition.Reason == "CompletedWithErrors"
+				condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
+				return condition != nil && condition.Reason == ReasonCompletedWithErrors
 			}, timeout, interval).Should(BeTrue())
 
 			// Verify the condition details
-			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, "Complete")
+			condition := meta.FindStatusCondition(updatedResource.Status.Conditions, ConditionComplete)
 			Expect(condition).NotTo(BeNil())
 			Expect(condition.Status).To(Equal(metav1.ConditionTrue))
-			Expect(condition.Reason).To(Equal("CompletedWithErrors"))
+			Expect(condition.Reason).To(Equal(ReasonCompletedWithErrors))
 			Expect(condition.Message).To(ContainSubstring("error"))
 		})
 	})

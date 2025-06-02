@@ -120,7 +120,7 @@ var _ = Describe("DeleteService", func() {
 
 			err = c.List(ctx, list, client.InNamespace(ns.GetName()))
 			Expect(err).NotTo(HaveOccurred())
-			Expect(list.Items).To(HaveLen(0))
+			Expect(list.Items).To(BeEmpty())
 		})
 
 		It("should not actually delete in dry run mode", func() {
@@ -189,7 +189,7 @@ var _ = Describe("DeleteService", func() {
 
 			err = c.List(ctx, list, client.InNamespace(ns.GetName()))
 			Expect(err).NotTo(HaveOccurred())
-			Expect(list.Items).To(HaveLen(0))
+			Expect(list.Items).To(BeEmpty())
 		})
 	})
 })

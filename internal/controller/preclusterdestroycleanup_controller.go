@@ -30,6 +30,15 @@ import (
 	"github.com/MetroStar/quartz-operator/internal/services"
 )
 
+const (
+	ConditionComplete           = "Complete"
+	ConditionInitialized        = "Initialized"
+	ReasonCompletedSuccessfully = "CompletedSuccessfully"
+	ReasonCompletedWithErrors   = "CompletedWithErrors"
+	ReasonNoResources           = "NoResources"
+	ReasonReconciling           = "Reconciling"
+)
+
 // PreClusterDestroyCleanupReconciler reconciles a PreClusterDestroyCleanup object
 type PreClusterDestroyCleanupReconciler struct {
 	client.Client
@@ -62,7 +71,7 @@ func (r *PreClusterDestroyCleanupReconciler) Reconcile(ctx context.Context, req 
 
 	if len(obj.Status.Conditions) == 0 {
 		// Initialize conditions if not set
-		if err := update.UpdateCondition(ctx, obj, "Initialized", "Reconciling", "Reconciliation started"); err != nil {
+		if err := update.UpdateCondition(ctx, obj, ConditionInitialized, ReasonReconciling, "Reconciliation started"); err != nil {
 			logger.Error(err, "failed to initialize PreClusterDestroyCleanup status conditions")
 			return ctrl.Result{}, err
 		}
@@ -77,7 +86,7 @@ func (r *PreClusterDestroyCleanupReconciler) Reconcile(ctx context.Context, req 
 	items := obj.Spec.Resources
 	if len(items) == 0 {
 		logger.Info("No resources specified, skipping")
-		if err := update.UpdateCondition(ctx, obj, "Complete", "NoResources", "No resources specified for processing"); err != nil {
+		if err := update.UpdateCondition(ctx, obj, ConditionComplete, ReasonNoResources, "No resources specified for processing"); err != nil {
 			logger.Error(err, "failed to update PreClusterDestroyCleanup status")
 			return ctrl.Result{}, err
 		}
@@ -88,14 +97,14 @@ func (r *PreClusterDestroyCleanupReconciler) Reconcile(ctx context.Context, req 
 	count, err := cleanup.CleanupItems(ctx, obj.Spec.DryRun, items)
 	if err != nil {
 		logger.Error(err, "Error(s) occurred during processing")
-		if err := update.UpdateCondition(ctx, obj, "Complete", "CompletedWithErrors", fmt.Sprintf("Processed %d resources with error(s): %v", count, err)); err != nil {
+		if err := update.UpdateCondition(ctx, obj, ConditionComplete, ReasonCompletedWithErrors, fmt.Sprintf("Processed %d resources with error(s): %v", count, err)); err != nil {
 			logger.Error(err, "failed to update PreClusterDestroyCleanup status")
 			return ctrl.Result{}, err
 		}
 		return ctrl.Result{}, err
 	}
 
-	if err := update.UpdateCondition(ctx, obj, "Complete", "CompletedSuccessfully", fmt.Sprintf("Processed %d resources", count)); err != nil {
+	if err := update.UpdateCondition(ctx, obj, ConditionComplete, ReasonCompletedSuccessfully, fmt.Sprintf("Processed %d resources", count)); err != nil {
 		logger.Error(err, "failed to update PreClusterDestroyCleanup status")
 		return ctrl.Result{}, err
 	}
