@@ -23,6 +23,12 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+const (
+	ActionUnknown     = ""
+	ActionDelete      = "delete"
+	ActionScaleToZero = "scaleToZero"
+)
+
 type PreClusterDestroyCleanupItem struct {
 	Kind      string `json:"kind,omitempty"`      // Kind is the name of the kind.
 	Namespace string `json:"namespace,omitempty"` // Optional: Namespace where the resource is located
@@ -30,7 +36,7 @@ type PreClusterDestroyCleanupItem struct {
 	Category  string `json:"category,omitempty"`  // Category is the category of the resource, e.g., "networking", "storage", etc.
 
 	// +kubebuilder:validation:Enum=delete;scaleToZero
-	Action string `json:"action,omitempty"` // Action is the action to be taken on the resource, e.g., "delete", "detach", etc.
+	Action string `json:"action,omitempty"` // Action is the action to be taken on the resource, e.g., "delete", "scaleToZero", etc.
 }
 
 // PreClusterDestroyCleanupSpec defines the desired state of PreClusterDestroyCleanup.
