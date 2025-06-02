@@ -3,41 +3,25 @@ package services
 import (
 	"context"
 	"errors"
-	"testing"
+	"strings"
 
 	"github.com/brianvoe/gofakeit/v7"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	cleanupv1alpha1 "github.com/MetroStar/quartz-operator/api/v1alpha1"
-	"github.com/MetroStar/quartz-operator/internal/testutil"
 )
-
-var testEnv *testutil.TestEnv
-
-func TestUpdateService(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "UpdateService Suite")
-}
-
-var _ = BeforeSuite(func() {
-	// Setup the shared test environment
-	testEnv = testutil.SetupTestEnv()
-})
-
-var _ = AfterSuite(func() {
-	// Teardown the shared test environment
-	testEnv.TeardownTestEnv()
-})
 
 var _ = Describe("UpdateService", func() {
 	var (
 		ctx context.Context
 		c   client.Client
 		svc *UpdateService
+		ns  *corev1.Namespace
 		obj *cleanupv1alpha1.PreClusterDestroyCleanup
 	)
 
@@ -45,10 +29,12 @@ var _ = Describe("UpdateService", func() {
 		ctx = testEnv.Ctx
 		c = testEnv.K8sClient
 
+		suffix := strings.ToLower(gofakeit.Word())
+		ns = fakeNamespace("deleteservice-" + suffix)
 		obj = &cleanupv1alpha1.PreClusterDestroyCleanup{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-cleanup-" + gofakeit.Word(),
-				Namespace: "default",
+				Name:      "test-cleanup-" + suffix,
+				Namespace: ns.GetName(),
 			},
 			Spec: cleanupv1alpha1.PreClusterDestroyCleanupSpec{
 				DryRun: false,
@@ -56,7 +42,7 @@ var _ = Describe("UpdateService", func() {
 					{
 						Kind:      "Deployment",
 						Namespace: "test-ns",
-						Name:      "test-deploy",
+						Name:      "test-deploy-" + suffix,
 						Action:    cleanupv1alpha1.ActionDelete,
 					},
 				},
@@ -66,7 +52,8 @@ var _ = Describe("UpdateService", func() {
 			},
 		}
 
-		c.Create(ctx, obj)
+		Expect(c.Create(ctx, ns)).To(Succeed())
+		Expect(c.Create(ctx, obj)).To(Succeed())
 		svc = NewUpdateService(c)
 	})
 
