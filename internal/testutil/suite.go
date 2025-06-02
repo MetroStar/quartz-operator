@@ -4,10 +4,15 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/brianvoe/gofakeit/v7"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -26,6 +31,8 @@ type TestEnv struct {
 	TestEnv   *envtest.Environment
 	Cfg       *rest.Config
 	K8sClient client.Client
+
+	suffix string
 }
 
 // SetupTestEnv initializes the test environment
@@ -96,4 +103,137 @@ func getFirstFoundEnvTestBinaryDir() string {
 		}
 	}
 	return ""
+}
+
+func (t TestEnv) WithSuffix(suffix string) *TestEnv {
+	newEnv := t
+	newEnv.suffix = suffix
+	return &newEnv
+}
+
+func (t TestEnv) WithRandomSuffix() *TestEnv {
+	return t.WithSuffix(strings.ToLower(gofakeit.LetterN(5)))
+}
+
+func (t TestEnv) Namespace(name string) *corev1.Namespace {
+	n := t.FormatName(name)
+	return &corev1.Namespace{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Namespace",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: n,
+		},
+	}
+}
+
+func (t TestEnv) Pod(name string, ns string) *corev1.Pod {
+	n := t.FormatName(name)
+	return &corev1.Pod{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Pod",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      n,
+			Namespace: ns,
+			Labels: map[string]string{
+				"app": n,
+			},
+		},
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				{
+					Name:  n,
+					Image: "nginx:latest",
+				},
+			},
+		},
+	}
+}
+
+func (t TestEnv) Deployment(name string, ns string) *appsv1.Deployment {
+	n := t.FormatName(name)
+	return &appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Deployment",
+			APIVersion: "apps/v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      n,
+			Namespace: ns,
+		},
+		Spec: appsv1.DeploymentSpec{
+			Replicas: t.Int32Ptr(3),
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"app": n,
+				},
+			},
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"app": n,
+					},
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name:  n,
+							Image: "nginx:latest",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func (t TestEnv) StatefulSet(name string, ns string) *appsv1.StatefulSet {
+	n := t.FormatName(name)
+	return &appsv1.StatefulSet{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "StatefulSet",
+			APIVersion: "apps/v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      n,
+			Namespace: ns,
+		},
+		Spec: appsv1.StatefulSetSpec{
+			Replicas: t.Int32Ptr(3),
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"app": n,
+				},
+			},
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"app": n,
+					},
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name:  n,
+							Image: "nginx:latest",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func (t TestEnv) Int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func (t TestEnv) FormatName(name string) string {
+	if t.suffix == "" {
+		return name
+	}
+	return name + "-" + t.suffix
 }

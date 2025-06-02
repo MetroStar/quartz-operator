@@ -2,9 +2,7 @@ package services
 
 import (
 	"context"
-	"strings"
 
-	"github.com/brianvoe/gofakeit/v7"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -58,10 +56,10 @@ var _ = Describe("LookupService", func() {
 	Describe("ListResources", func() {
 		It("should list resources of a specific kind in a namespace", func() {
 
-			suffix := strings.ToLower(gofakeit.Word())
-			ns := fakeNamespace("lookupservice-" + suffix)
-			pod1 := fakePod("test-pod-1-"+suffix, ns.GetName())
-			pod2 := fakePod("test-pod-2-"+suffix, ns.GetName())
+			t := testEnv.WithRandomSuffix()
+			ns := t.Namespace("lookupservice")
+			pod1 := t.Pod("test-pod-1", ns.GetName())
+			pod2 := t.Pod("test-pod-2", ns.GetName())
 
 			// Add pods to the fake client
 			Expect(c.Create(ctx, ns)).To(Succeed())

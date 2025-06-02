@@ -2,9 +2,7 @@ package services
 
 import (
 	"context"
-	"strings"
 
-	"github.com/brianvoe/gofakeit/v7"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -32,23 +30,23 @@ var _ = Describe("ScaleService", func() {
 		c = testEnv.K8sClient
 
 		// Create test objects
-		suffix := strings.ToLower(gofakeit.Word())
-		ns = fakeNamespace("scaleservice-" + suffix)
-		deployment = fakeDeployment("test-deployment-"+suffix, ns.GetName())
-		statefulSet = fakeStatefulSet("test-statefulset-"+suffix, ns.GetName())
+		t := testEnv.WithRandomSuffix()
+		ns = t.Namespace("scaleservice")
+		deployment = t.Deployment("test-deployment", ns.GetName())
+		statefulSet = t.StatefulSet("test-statefulset", ns.GetName())
 
 		Expect(c.Create(ctx, ns)).To(Succeed())
 		Expect(c.Create(ctx, deployment)).To(Succeed())
 		Expect(c.Create(ctx, statefulSet)).To(Succeed())
 
 		// Initialize services
-		lookupService = NewLookupService(c, testEnv.Cfg)
+		lookupService = NewLookupService(c, t.Cfg)
 		scaleService = NewScaleService(ctx, c, lookupService)
 	})
 
 	Describe("ScaleDeployment", func() {
 		It("should scale a deployment when not in dry run mode", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			count, err := scaleService.ScaleDeployment(ctx, false, ns.GetName(), deployment.GetName(), replicas)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -62,7 +60,7 @@ var _ = Describe("ScaleService", func() {
 		})
 
 		It("should not actually scale a deployment in dry run mode", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			count, err := scaleService.ScaleDeployment(ctx, true, ns.GetName(), deployment.GetName(), replicas)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -76,7 +74,7 @@ var _ = Describe("ScaleService", func() {
 		})
 
 		It("should return error when deployment doesn't exist", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			count, err := scaleService.ScaleDeployment(ctx, false, ns.GetName(), "nonexistent-deployment", replicas)
 
 			Expect(err).To(HaveOccurred())
@@ -86,7 +84,7 @@ var _ = Describe("ScaleService", func() {
 
 	Describe("ScaleStatefulSet", func() {
 		It("should scale a statefulset when not in dry run mode", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			count, err := scaleService.ScaleStatefulSet(ctx, false, ns.GetName(), statefulSet.GetName(), replicas)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -100,7 +98,7 @@ var _ = Describe("ScaleService", func() {
 		})
 
 		It("should not actually scale a statefulset in dry run mode", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			count, err := scaleService.ScaleStatefulSet(ctx, true, ns.GetName(), statefulSet.GetName(), replicas)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -114,7 +112,7 @@ var _ = Describe("ScaleService", func() {
 		})
 
 		It("should return error when statefulset doesn't exist", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			count, err := scaleService.ScaleStatefulSet(ctx, false, ns.GetName(), "nonexistent-statefulset", replicas)
 
 			Expect(err).To(HaveOccurred())
@@ -124,7 +122,7 @@ var _ = Describe("ScaleService", func() {
 
 	Describe("ScaleItem", func() {
 		It("should scale a deployment by name", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			item := cleanupv1alpha1.PreClusterDestroyCleanupItem{
 				Kind:      DeploymentKind,
 				Namespace: ns.GetName(),
@@ -145,7 +143,7 @@ var _ = Describe("ScaleService", func() {
 		})
 
 		It("should scale a statefulset by name", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			item := cleanupv1alpha1.PreClusterDestroyCleanupItem{
 				Kind:      StatefulSetKind,
 				Namespace: ns.GetName(),
@@ -166,7 +164,7 @@ var _ = Describe("ScaleService", func() {
 		})
 
 		It("should not support scaling for unsupported kinds", func() {
-			replicas := int32Ptr(0)
+			replicas := testEnv.Int32Ptr(0)
 			item := cleanupv1alpha1.PreClusterDestroyCleanupItem{
 				Kind:      "Service",
 				Namespace: ns.GetName(),

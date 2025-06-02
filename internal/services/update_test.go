@@ -3,9 +3,7 @@ package services
 import (
 	"context"
 	"errors"
-	"strings"
 
-	"github.com/brianvoe/gofakeit/v7"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -29,11 +27,11 @@ var _ = Describe("UpdateService", func() {
 		ctx = testEnv.Ctx
 		c = testEnv.K8sClient
 
-		suffix := strings.ToLower(gofakeit.Word())
-		ns = fakeNamespace("deleteservice-" + suffix)
+		t := testEnv.WithRandomSuffix()
+		ns = t.Namespace("deleteservice")
 		obj = &cleanupv1alpha1.PreClusterDestroyCleanup{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-cleanup-" + suffix,
+				Name:      t.FormatName("test-cleanup"),
 				Namespace: ns.GetName(),
 			},
 			Spec: cleanupv1alpha1.PreClusterDestroyCleanupSpec{
@@ -42,7 +40,7 @@ var _ = Describe("UpdateService", func() {
 					{
 						Kind:      "Deployment",
 						Namespace: "test-ns",
-						Name:      "test-deploy-" + suffix,
+						Name:      t.FormatName("test-deploy"),
 						Action:    cleanupv1alpha1.ActionDelete,
 					},
 				},

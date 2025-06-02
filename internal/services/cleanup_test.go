@@ -2,9 +2,7 @@ package services
 
 import (
 	"context"
-	"strings"
 
-	"github.com/brianvoe/gofakeit/v7"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -29,10 +27,10 @@ var _ = Describe("CleanupService", func() {
 		c = testEnv.K8sClient
 
 		// Create test resources
-		suffix := strings.ToLower(gofakeit.Word())
-		ns = fakeNamespace("cleanupservice-" + suffix)
-		deployment = fakeDeployment("test-deployment-"+suffix, ns.GetName())
-		statefulSet = fakeStatefulSet("test-statefulset-"+suffix, ns.GetName())
+		t := testEnv.WithRandomSuffix()
+		ns = t.Namespace("cleanupservice")
+		deployment = t.Deployment("test-deployment", ns.GetName())
+		statefulSet = t.StatefulSet("test-statefulset", ns.GetName())
 
 		// Create fake client with the mapper and test resources
 		Expect(c.Create(ctx, ns)).To(Succeed())
@@ -40,7 +38,12 @@ var _ = Describe("CleanupService", func() {
 		Expect(c.Create(ctx, statefulSet)).To(Succeed())
 
 		// Initialize the CleanupService
-		cleanupService = NewCleanupService(ctx, c, testEnv.Cfg)
+		cleanupService = NewCleanupService(ctx, c, t.Cfg)
+	})
+
+	AfterEach(func() {
+		// Delete the test resources
+		Expect(c.Delete(ctx, ns)).To(Succeed())
 	})
 
 	Describe("CleanupItems", func() {
