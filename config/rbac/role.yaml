@@ -14,6 +14,14 @@ rules:
   - list
   - watch
 - apiGroups:
+  - apps
+  resources:
+  - deployments
+  - statefulsets
+  verbs:
+  - patch
+  - update
+- apiGroups:
   - cleanup.quartz.metrostar.com
   resources:
   - preclusterdestroycleanups

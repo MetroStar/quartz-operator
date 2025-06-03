@@ -39,7 +39,8 @@ func (s *DeleteService) DeleteItem(ctx context.Context, dryRun bool, gvk schema.
 		}
 
 		if len(gvks) == 0 {
-			return 0, fmt.Errorf("no CRDs found for category %s", item.Category)
+			s.logger.Info("No CRDs found for category", "category", item.Category)
+			return 0, nil // Nothing to delete
 		}
 
 		count := 0

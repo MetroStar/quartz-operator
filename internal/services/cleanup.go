@@ -57,14 +57,14 @@ func (s *CleanupService) CleanupItems(ctx context.Context, dryRun bool, items []
 			replicas := int32(0)
 			c, err := s.scale.ScaleItem(ctx, dryRun, gvk, item, &replicas)
 			if err != nil {
-				errs = append(errs, fmt.Errorf("failed to scale %s/%s to zero: %w", item.Namespace, item.Name, err))
+				errs = append(errs, fmt.Errorf("failed to scale %s %s/%s to zero: %w", gvk.Kind, item.Namespace, item.Name, err))
 			}
 			count += c
 		case cleanupv1alpha1.ActionDelete:
 			s.logger.Info("Deleting item", "kind", gvk.Kind, "namespace", item.Namespace, "name", item.Name)
 			c, err := s.delete.DeleteItem(ctx, dryRun, gvk, item)
 			if err != nil {
-				errs = append(errs, fmt.Errorf("failed to delete %s/%s: %w", item.Namespace, item.Name, err))
+				errs = append(errs, fmt.Errorf("failed to delete %s %s/%s: %w", gvk.Kind, item.Namespace, item.Name, err))
 			}
 			count += c
 		case cleanupv1alpha1.ActionUnknown:

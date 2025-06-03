@@ -49,6 +49,7 @@ type PreClusterDestroyCleanupReconciler struct {
 // +kubebuilder:rbac:groups=cleanup.quartz.metrostar.com,resources=preclusterdestroycleanups,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cleanup.quartz.metrostar.com,resources=preclusterdestroycleanups/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=cleanup.quartz.metrostar.com,resources=preclusterdestroycleanups/finalizers,verbs=update
+// +kubebuilder:rbac:groups=apps,resources=deployments;statefulsets,verbs=update;patch
 // +kubebuilder:rbac:groups=*,resources=*,verbs=delete;list;get;watch
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
