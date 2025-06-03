@@ -1,25 +1,29 @@
+{{- if .Values.rbac.enable }}
 # This rule is not used by the project quartz-operator itself.
 # It is provided to allow the cluster admin to help manage permissions for users.
 #
-# Grants read-only access to cleanup.quartz.metrostar.com resources.
-# This role is intended for users who need visibility into these resources
-# without permissions to modify them. It is ideal for monitoring purposes and limited-access viewing.
+# Grants permissions to create, update, and delete resources within the cleanup.quartz.metrostar.com.
+# This role is intended for users who need to manage these resources
+# but should not control RBAC or manage permissions for others.
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: quartz-operator
-    app.kubernetes.io/managed-by: kustomize
-  name: preclusterdestroycleanup-viewer-role
+    {{- include "chart.labels" . | nindent 4 }}
+  name: preclusterdestroycleanup-editor-role
 rules:
 - apiGroups:
   - cleanup.quartz.metrostar.com
   resources:
   - preclusterdestroycleanups
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
 - apiGroups:
   - cleanup.quartz.metrostar.com
@@ -27,3 +31,4 @@ rules:
   - preclusterdestroycleanups/status
   verbs:
   - get
+{{- end -}}

@@ -1,4 +1,4 @@
-# tmp
+# quartz-operator
 // TODO(user): Add simple overview of use/purpose
 
 ## Description

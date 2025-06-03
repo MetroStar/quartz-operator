@@ -1,11 +1,12 @@
+{{- if .Values.rbac.enable }}
 # permissions to do leader election.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
-    app.kubernetes.io/name: quartz-operator
-    app.kubernetes.io/managed-by: kustomize
-  name: leader-election-role
+    {{- include "chart.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+  name: quartz-operator-leader-election-role
 rules:
 - apiGroups:
   - ""
@@ -38,3 +39,4 @@ rules:
   verbs:
   - create
   - patch
+{{- end -}}

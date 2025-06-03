@@ -2,7 +2,7 @@ apiVersion: cleanup.quartz.metrostar.com/v1alpha1
 kind: PreClusterDestroyCleanup
 metadata:
   labels:
-    app.kubernetes.io/name: tmp
+    app.kubernetes.io/name: quartz-operator
     app.kubernetes.io/managed-by: kustomize
   name: preclusterdestroycleanup-sample
 spec:

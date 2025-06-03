@@ -31,16 +31,16 @@ import (
 )
 
 // namespace where the project is deployed in
-const namespace = "tmp-system"
+const namespace = "quartz"
 
 // serviceAccountName created for the project
-const serviceAccountName = "tmp-controller-manager"
+const serviceAccountName = "quartz-operator-controller-manager"
 
 // metricsServiceName is the name of the metrics service of the project
-const metricsServiceName = "tmp-controller-manager-metrics-service"
+const metricsServiceName = "quartz-operator-controller-manager-metrics-service"
 
 // metricsRoleBindingName is the name of the RBAC that will be created to allow get the metrics data
-const metricsRoleBindingName = "tmp-metrics-binding"
+const metricsRoleBindingName = "quartz-operator-metrics-binding"
 
 var _ = Describe("Manager", Ordered, func() {
 	var controllerPodName string
@@ -173,7 +173,7 @@ var _ = Describe("Manager", Ordered, func() {
 		It("should ensure the metrics endpoint is serving metrics", func() {
 			By("creating a ClusterRoleBinding for the service account to allow access to metrics")
 			cmd := exec.Command("kubectl", "create", "clusterrolebinding", metricsRoleBindingName,
-				"--clusterrole=tmp-metrics-reader",
+				"--clusterrole=quartz-operator-metrics-reader",
 				fmt.Sprintf("--serviceaccount=%s:%s", namespace, serviceAccountName),
 			)
 			_, err := utils.Run(cmd)

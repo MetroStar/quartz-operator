@@ -1,3 +1,4 @@
+{{- if .Values.rbac.enable }}
 # This rule is not used by the project quartz-operator itself.
 # It is provided to allow the cluster admin to help manage permissions for users.
 #
@@ -9,8 +10,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: quartz-operator
-    app.kubernetes.io/managed-by: kustomize
+    {{- include "chart.labels" . | nindent 4 }}
   name: preclusterdestroycleanup-viewer-role
 rules:
 - apiGroups:
@@ -27,3 +27,4 @@ rules:
   - preclusterdestroycleanups/status
   verbs:
   - get
+{{- end -}}

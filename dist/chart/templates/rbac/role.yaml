@@ -1,0 +1,52 @@
+{{- if .Values.rbac.enable }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  name: quartz-operator-manager-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - delete
+  - get
+  - list
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - cleanup.quartz.metrostar.com
+  resources:
+  - preclusterdestroycleanups
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cleanup.quartz.metrostar.com
+  resources:
+  - preclusterdestroycleanups/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - cleanup.quartz.metrostar.com
+  resources:
+  - preclusterdestroycleanups/status
+  verbs:
+  - get
+  - patch
+  - update
+{{- end -}}

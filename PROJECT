@@ -5,7 +5,9 @@
 domain: quartz.metrostar.com
 layout:
 - go.kubebuilder.io/v4
-projectName: tmp
+plugins:
+  helm.kubebuilder.io/v1-alpha: {}
+projectName: quartz-operator
 repo: github.com/MetroStar/quartz-operator
 resources:
 - api:
