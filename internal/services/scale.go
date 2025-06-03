@@ -94,6 +94,7 @@ func (s *ScaleService) ScaleDeployment(ctx context.Context, dryRun bool, ns stri
 		return 1, nil
 	}
 
+	s.logger.Info("Scaling deployment", "kind", DeploymentKind, "namespace", ns, "name", name, "replicas", *replicas)
 	deployment := &appsv1.Deployment{}
 	if err := s.client.Get(ctx, client.ObjectKey{Namespace: ns, Name: name}, deployment); err != nil {
 		return 0, fmt.Errorf("failed to get %s/%s: %w", ns, name, err)
@@ -120,6 +121,7 @@ func (s *ScaleService) ScaleStatefulSet(ctx context.Context, dryRun bool, ns str
 		return 1, nil
 	}
 
+	s.logger.Info("Scaling statefulset", "kind", StatefulSetKind, "namespace", ns, "name", name, "replicas", *replicas)
 	statefulSet := &appsv1.StatefulSet{}
 	if err := s.client.Get(ctx, client.ObjectKey{Namespace: ns, Name: name}, statefulSet); err != nil {
 		return 0, fmt.Errorf("failed to get %s/%s: %w", ns, name, err)

@@ -6,24 +6,28 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/go-logr/logr"
 	apiextclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // LookupService provides methods to look up GroupVersionKind and CustomResourceDefinitions (CRDs).
 type LookupService struct {
 	client client.Client
 	config *rest.Config
+	logger logr.Logger
 }
 
 // NewLookupService creates a new LookupService instance.
-func NewLookupService(client client.Client, config *rest.Config) *LookupService {
+func NewLookupService(ctx context.Context, client client.Client, config *rest.Config) *LookupService {
 	return &LookupService{
 		client: client,
 		config: config,
+		logger: log.FromContext(ctx),
 	}
 }
 
@@ -61,11 +65,13 @@ func (s *LookupService) LookupCrdsByCategory(ctx context.Context, category strin
 		return nil, fmt.Errorf("failed to list CRDs: %w", err)
 	}
 
+	s.logger.Info("Looking up CRDs by category", "category", category)
 	gvks := []schema.GroupVersionKind{}
 	for _, crd := range crds.Items {
 		if slices.ContainsFunc(crd.Spec.Names.Categories, func(c string) bool {
 			return strings.EqualFold(c, category)
 		}) {
+			s.logger.Info("Found CRD matching category", "category", category, "name", crd.Name, "group", crd.Spec.Group, "version", crd.Spec.Versions[0].Name, "kind", crd.Spec.Names.Kind)
 			gvks = append(gvks, schema.GroupVersionKind{
 				Group:   crd.Spec.Group,
 				Version: crd.Spec.Versions[0].Name, // Use the first version for simplicity

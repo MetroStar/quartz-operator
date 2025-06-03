@@ -97,6 +97,7 @@ func (s *DeleteService) DeleteResources(ctx context.Context, dryRun bool, gvk sc
 	count := 0
 	errs := []error{}
 	for _, item := range list.Items {
+		s.logger.Info("Deleting item", "kind", gvk.Kind, "namespace", item.GetNamespace(), "name", item.GetName())
 		if err := s.client.Delete(ctx, &item); err != nil {
 			errs = append(errs, fmt.Errorf("failed to delete %s/%s: %w", item.GetNamespace(), item.GetName(), err))
 			continue
@@ -129,6 +130,7 @@ func (s *DeleteService) DeleteNamedResource(ctx context.Context, dryRun bool, gv
 		return 1, nil
 	}
 
+	s.logger.Info("Deleting item", "kind", gvk.Kind, "namespace", item.GetNamespace(), "name", item.GetName())
 	if err := s.client.Delete(ctx, item); err != nil {
 		return 0, fmt.Errorf("failed to delete %s/%s: %w", item.GetNamespace(), item.GetName(), err)
 	}

@@ -35,6 +35,8 @@ controllerManager:
           - "ALL"
   securityContext:
     runAsNonRoot: true
+    runAsGroup: 65532
+    runAsUser: 65532
     seccompProfile:
       type: RuntimeDefault
   terminationGracePeriodSeconds: 10
