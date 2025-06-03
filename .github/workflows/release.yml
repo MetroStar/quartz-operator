@@ -45,6 +45,7 @@ jobs:
           type=ref,event=branch
           type=semver,pattern=v{{version}}
           type=sha
+          type=raw,value={{date 'YYYYMMDD-HHmm'}}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
