@@ -21,7 +21,7 @@ var _ = Describe("LookupService", func() {
 		c = testEnv.K8sClient
 
 		// Initialize the LookupService with a test config
-		lookupService = NewLookupService(c, testEnv.Cfg)
+		lookupService = NewLookupService(ctx, c, testEnv.Cfg)
 	})
 
 	Describe("LookupGroupKind", func() {

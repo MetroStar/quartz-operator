@@ -40,7 +40,7 @@ var _ = Describe("ScaleService", func() {
 		Expect(c.Create(ctx, statefulSet)).To(Succeed())
 
 		// Initialize services
-		lookupService = NewLookupService(c, t.Cfg)
+		lookupService = NewLookupService(ctx, c, t.Cfg)
 		scaleService = NewScaleService(ctx, c, lookupService)
 	})
 

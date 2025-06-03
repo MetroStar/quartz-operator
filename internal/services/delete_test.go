@@ -40,7 +40,7 @@ var _ = Describe("DeleteService", func() {
 		Expect(c.Create(ctx, pod2)).To(Succeed())
 
 		// Initialize services
-		lookupService = NewLookupService(c, t.Cfg)
+		lookupService = NewLookupService(ctx, c, t.Cfg)
 		deleteService = NewDeleteService(ctx, c, lookupService)
 	})
 

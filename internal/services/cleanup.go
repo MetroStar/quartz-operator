@@ -23,7 +23,7 @@ type CleanupService struct {
 
 // NewCleanupService creates a new CleanupService instance.
 func NewCleanupService(ctx context.Context, client client.Client, config *rest.Config) *CleanupService {
-	lookup := NewLookupService(client, config)
+	lookup := NewLookupService(ctx, client, config)
 	return &CleanupService{
 		lookup: lookup,
 		scale:  NewScaleService(ctx, client, lookup),
